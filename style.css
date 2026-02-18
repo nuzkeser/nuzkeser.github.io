@@ -1,12 +1,13 @@
 mt {
-    font-size: x-large;
-    align-content: center;
+    font-size: 72px;
+    text-align: center;
     color: aliceblue;
     background-color: black;
 }
 
 p1 {
-    align-content: center;
+    text-align: center;
+    font-size: x-large;
     font-style: italic;
     font-family: 'Times New Roman', Times, serif;
 }
