@@ -109,6 +109,9 @@ body::before {
 }
 
 .project {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
     background: var(--card-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
