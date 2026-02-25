@@ -67,7 +67,7 @@ body::before {
 
 .container {
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 1rem auto;
     padding: 2rem;
 }
 
@@ -76,7 +76,7 @@ body::before {
     backdrop-filter: blur(80px);
     border: 1px solid var(--border-color);
     border-radius: 40px;
-    padding: 3rem 2rem;
+    padding: 1.5rem 0.5rem;
     position: relative;
     text-align: center;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.02);
@@ -92,7 +92,7 @@ body::before {
     -webkit-text-fill-color: transparent;
 }
 
-.little_titles {
+.little_texts {
     font-size: clamp(1rem, 2.5vw, 1.25rem);
     text-align: center;
     color: var(--text-secondary);
@@ -101,14 +101,26 @@ body::before {
     letter-spacing: 0.5px;
 }
 
-.projects {
+.menu_titles {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    border-radius: 40px;
+    padding: 1.5rem 0.5rem;
+    text-align: left;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cells {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
     margin-top: 3rem;
 }
 
-.project {
+.cell {
     display: flex;
     flex-direction: column;
     text-decoration: none;
@@ -125,7 +137,7 @@ body::before {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.project::before {
+.cell::before {
     content: '';
     position: absolute;
     top: 0;
@@ -137,17 +149,17 @@ body::before {
     transition: opacity 0.3s ease;
 }
 
-.project:hover {
+.cell:hover {
     transform: translateY(-10px);
     border-color: var(--accent-color);
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-.project:hover::before {
+.cell:hover::before {
     opacity: 1;
 }
 
-.project_icon {
+.cell_icon {
     width: 60px;
     height: 60px;
     background: rgba(255, 255, 255, 0.05);
@@ -160,7 +172,7 @@ body::before {
     color: var(--accent-color);
 }
 
-.project_title {
+.cell_title {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 700;
@@ -168,7 +180,7 @@ body::before {
     color: #fff;
 }
 
-.project_description {
+.cell_description {
     font-size: 0.95rem;
     color: var(--text-secondary);
     line-height: 1.5;

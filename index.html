@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+    <title>Home Page</title>
+    <link rel="icon" type="image/x-icon" href="src/favicon.ico">
     <meta name="description"
         content="Portfolio of creative projects including video downloaders, study tools, and file converters.">
     <link rel="stylesheet" href="css/style.css">
@@ -14,54 +15,67 @@
     <div class="container">
         <header>
             <div class="titles">
-                <h1>Welcome!</h1>
+                <a class="menu_titles" style="text-align: left;" href="index.html">Home Page</a>
+                <a class="menu_titles" style="text-align: right;" href="projects.html">Projects</a>
             </div>
-            <div class="little_titles">
-                Here are some projects that I am working on...
+            <br>
+            <br>
+            <div class="titles">
+                <h1>Hello There!</h1>
+            </div>
+            <div class="little_texts">
+                I am Nevzat and this is my website to share information about myself and my projects.
             </div>
         </header>
 
-        <main class="projects">
-            <a href="https://github.com/nuzkeser/Simple-Video-Downloader" target="_blank" rel="noopener noreferrer"
-                class="project">
-                <div class="project_icon">📥</div>
-                <div class="project_title">
-                    Youtube Video Downloader
-                    <br>
-                    [Alpha version
-                    <br>
-                    for Linux]
-                </div>
-                <div class="project_description">Simple Video and Music Downloader with high-quality output options.
-                </div>
-            </a>
+        <main>
+            <div class="cells">
 
-            <a href="#" target="_blank" rel="noopener noreferrer" class="project">
-                <div class="project_icon">⏱️</div>
-                <div class="project_title">
-                    Study Timer
-                    <br>
-                    [Not Started]
+                <div class="cell">
+                    <div class="cell_icon">📚</div>
+                    <div class="cell_title">
+                        IB and IGCSE Student
+                    </div>
+                    <div class="cell_description">
+                        I live in Turkey and I am a student in Bilkent Erzurum Laboratory School.
+                        <br>
+                        <br>
+                        I am studying IB (currently in Year 1) and finished IGCSE.
+                    </div>
                 </div>
-                <div class="project_description">Minimalist Pomodoro timer designed to boost focus and productivity.
-                </div>
-            </a>
 
-            <a href="#" target="_blank" rel="noopener noreferrer" class="project">
-                <div class="project_icon">🔄</div>
-                <div class="project_title">
-                    Format Converter
-                    <br>
-                    [Not Started]
+                <div class="cell">
+                    <div class="cell_icon">🧮</div>
+                    <div class="cell_title">
+                        Interested in STEM
+                    </div>
+                    <div class="cell_description">
+                        I am interested in Science, Technology, Engineering and Mathematics.
+                        <br>
+                        <br>
+                        Besides STEM, I am also working on programming and game development.
+                    </div>
                 </div>
-                <div class="project_description">Simple and useful converter for images, documents, and media files.
-                </div>
-            </a>
+
+                <a class="cell" href="projects.html">
+                    <div class="cell_icon">🚧</div>
+                    <div class="cell_title">
+                        Go to My Projects
+                    </div>
+                    <div class="cell_description">
+                        I am working on some projects to make me experienced and have fun.
+                        <br>
+                        <br>
+                        You can check them out in the projects page.
+                    </div>
+                </a>
+
+            </div>
         </main>
 
         <footer class="status_message">
-            <div class="little_titles">
-                I am doing these projects for fun and to have some experience.
+            <div class="little_texts">
+                -Bottom Text-
             </div>
         </footer>
     </div>
