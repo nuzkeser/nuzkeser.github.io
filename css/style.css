@@ -162,25 +162,16 @@ body::before {
         padding: 5rem 4rem;
         border-radius: 48px;
     }
+}
 
-    .big_cell .cell_icon {
-        width: 120px;
-        height: 120px;
-        font-size: 4rem;
-        border-radius: 24px;
-        margin-bottom: 3rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+@media (max-width: 650px) {
+    .big_cell_header {
+        flex-direction: column;
+        gap: 1.5rem;
     }
 
-    .big_cell .cell_title {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .big_cell .cell_description {
-        font-size: 0.95rem;
+    .big_cell_title {
+        text-align: center;
     }
 }
 
@@ -222,20 +213,25 @@ body::before {
     color: var(--accent-color);
 }
 
+.big_cell_header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
 .big_cell_icon {
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    margin: 0 0 1.5rem;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     color: var(--accent-color);
-    width: 120px;
-    height: 120px;
-    font-size: 4rem;
-    border-radius: 24px;
-    margin-bottom: 3rem;
+    width: 100px;
+    height: 100px;
+    font-size: 3.5rem;
 }
 
 .cell_title {
@@ -248,9 +244,12 @@ body::before {
 
 .big_cell_title {
     font-family: var(--font-heading);
-    font-size: 2rem;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
     font-weight: 700;
+    line-height: 3rem;
     color: #fff;
+    margin: 0;
+    text-align: left;
 }
 
 .cell_description {
