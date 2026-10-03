@@ -661,6 +661,9 @@ button {
     background-color: var(--background);
     padding: 4px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .avatar-image {
@@ -668,7 +671,10 @@ button {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    object-position: center;
     display: block;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .avatar-chip {

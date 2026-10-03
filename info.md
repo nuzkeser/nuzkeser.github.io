@@ -3,10 +3,9 @@
 **High School Student | Computer Engineering & Technology**
 
 📍 Erzurum, Turkey
-📧 Email: *add your email*  
-🔗 GitHub: *add GitHub URL*  
-🔗 LinkedIn: *add LinkedIn URL*  
-🌐 Portfolio: *add portfolio URL*
+📧 Email: [nevzatuzkeser@gmail.com](mailto:nevzatuzkeser@gmail.com)  
+🔗 GitHub: [github.com/nuzkeser](https://github.com/nuzkeser)  
+🌐 Portfolio: [nuzkeser.github.io](https://nuzkeser.github.io)
 
 ---
 
@@ -19,7 +18,7 @@ IB Diploma Programme student at **Bilkent Erzurum Laboratory School (BELS)** wit
 ## Education
 
 ### Bilkent Erzurum Laboratory School (BELS)
-**IB Diploma Programme — Grade 11**  
+**IB Diploma Programme — Grade 12**  
 Türkiye
 
 **Higher Level**
