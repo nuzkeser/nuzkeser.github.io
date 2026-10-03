@@ -1,118 +1,482 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Page</title>
+    <title>Projects & Tools — Nevzat Salih Uzkeser</title>
     <link rel="icon" type="image/x-icon" href="src/favicon.ico">
     <meta name="description"
-        content="Portfolio of creative projects including video downloaders, study tools, and file converters.">
+        content="Explore projects and tools by Nevzat Salih Uzkeser, including ToneTunnel music converter, Simple Video Downloader, Virtual Multi-Output audio, and Godot game dev.">
+    <meta name="theme-color" content="#080c16">
+    <meta property="og:title" content="Projects & Tools — Nevzat Salih Uzkeser">
+    <meta property="og:description"
+        content="Explore open-source utilities, video downloaders, virtual audio systems, and game dev projects.">
+    <meta property="og:type" content="website">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <div class="titles">
-                <a class="menu_titles" style="text-align: left;" href="index.html">Home Page</a>
-                <a class="menu_titles" style="text-align: right;" href="projects.html">Projects</a>
-            </div>
-            <br>
-            <br>
-            <div class="titles">
-                <h1>Here are the Projects!</h1>
-            </div>
-            <div class="little_texts">
-                Here are some little projects that I am working on...
-            </div>
-        </header>
+    <!-- Top Scroll Progress Bar -->
+    <div class="scroll-progress-bar" aria-hidden="true">
+        <div class="scroll-progress-indicator" id="scroll-progress"></div>
+    </div>
 
-        <main class="cells">
-            <a href="https://github.com/nuzkeser/Simple-Video-Downloader" target="_blank" rel="noopener noreferrer"
-                class="cell">
-                <div class="cell_icon">📥</div>
-                <div class="cell_title">
-                    Youtube Video Downloader
-                </div>
-                <div class="cell_description">Simple Video and Music Downloader with high-quality output options.
-                    <br>
-                    <br>
-                    [Release Out]
-                </div>
+    <!-- Atmospheric Backdrop -->
+    <div class="bg-grid-fade" aria-hidden="true"></div>
+    <div class="aurora-mesh" aria-hidden="true"></div>
+
+    <!-- Navigation Header -->
+    <header class="site-header">
+        <div class="max-w-container header-inner">
+            <a href="index.html" class="brand-link" aria-label="Nevzat Salih Uzkeser Home">
+                <span class="brand-logo-box">N</span>
+                <span>Nevzat Salih Uzkeser</span>
             </a>
 
-            <a href="https://github.com/nuzkeser/Multi-Output-Router" target="_blank" rel="noopener noreferrer"
-                class="cell">
-                <div class="cell_icon">🎧</div>
-                <div class="cell_title">
-                    Virtual<br>Multi-Output
-                </div>
-                <div class="cell_description">Easy Virtual Multi-Output Audio System for Windows.
-                    <br>
-                    <br>
-                    [Beta Version for Windows]
-                </div>
-            </a>
+            <nav class="nav-links" aria-label="Main Navigation">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#about" class="nav-link">About</a>
+                <a href="projects.html" class="nav-link active">Projects & Tools</a>
+                <a href="resume.html" class="nav-link">Resume</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
 
-            <a href="https://nuzkeser.github.io/music-link-converter" target="_blank" rel="noopener noreferrer"
-                class="cell">
-                <div class="cell_icon">🎵</div>
-                <div class="cell_title">
-                    ToneTunnel
-                </div>
-                <div class="cell_description">A Web Tool for converting music links across platforms.
-                    <br>
-                    <br>
-                    [Stable]
-                </div>
-            </a>
+            <div class="header-actions">
+                <a href="https://github.com/nuzkeser" target="_blank" rel="noopener noreferrer" class="icon-button"
+                    aria-label="GitHub Profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4">
+                        </path>
+                        <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                    </svg>
+                </a>
+                <a href="video-download/index.html" class="icon-button" aria-label="ToneTunnel Video Downloader">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </a>
+                <button type="button" class="mobile-toggle" id="mobile-toggle" aria-label="Toggle navigation menu"
+                    aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 6h16"></path>
+                        <path d="M4 12h16"></path>
+                        <path d="M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
 
-            <a class="big_cell">
-                <div class="big_cell_header">
-                    <div class="big_cell_icon">🎮</div>
-                    <div class="big_cell_title">
-                        2D Rouge-Like Game
+    <!-- Mobile Drawer -->
+    <div class="mobile-nav-drawer" id="mobile-drawer" aria-label="Mobile Navigation">
+        <a href="index.html" class="mobile-nav-link">
+            <span>Home</span>
+            <span>→</span>
+        </a>
+        <a href="index.html#about" class="mobile-nav-link">
+            <span>About</span>
+            <span>→</span>
+        </a>
+        <a href="projects.html" class="mobile-nav-link active">
+            <span>Projects & Tools</span>
+            <span>→</span>
+        </a>
+        <a href="resume.html" class="mobile-nav-link">
+            <span>Resume / CV</span>
+            <span>→</span>
+        </a>
+        <a href="#contact" class="mobile-nav-link">
+            <span>Contact</span>
+            <span>→</span>
+        </a>
+        <a href="https://github.com/nuzkeser" target="_blank" rel="noopener noreferrer" class="mobile-nav-link">
+            <span>GitHub Profile</span>
+            <span>↗</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="site-main">
+        <div class="max-w-container section-pad">
+            <!-- Header Title -->
+            <div class="reveal">
+                <span class="section-tag">Portfolio & Showcase</span>
+                <h1 class="hero-title" style="margin-top: 0.5rem; font-size: clamp(2.4rem, 5vw, 3.75rem);">
+                    Things I've <span class="text-gradient">built & explored</span>.
+                </h1>
+                <p class="hero-desc" style="margin-top: 1rem;">
+                    A collection of open-source utilities, audio systems, web converters, and creative projects I work
+                    on to gain experience, solve daily friction, and have fun with code.
+                </p>
+            </div>
+
+            <!-- Featured Highlight Project Hero Card (Like TBE Academy on tbakie.com) -->
+            <div class="reveal">
+                <article class="featured-project-card">
+                    <div class="cta-glow-1"></div>
+                    <div class="featured-project-grid">
+                        <div class="featured-logo-box">
+                            ⬇️
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <span class="tag-badge">Featured · Web Downloader</span>
+                                <span class="tag-badge-muted">Live & 100% Ad-Free</span>
+                            </div>
+
+                            <h2 class="featured-project-title">
+                                <span>ToneTunnel Video Downloader</span>
+                                <a href="video-download/index.html" class="featured-link-sub">
+                                    <span>Web App</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M7 7h10v10"></path>
+                                        <path d="M7 17 17 7"></path>
+                                    </svg>
+                                </a>
+                            </h2>
+
+                            <p class="hero-desc" style="margin-top: 0.75rem; max-width: 100%; font-size: 0.95rem;">
+                                A clean, lightning-fast universal web video and audio downloader. Paste links from
+                                YouTube,
+                                TikTok, Instagram, Twitter/X, Reddit, or Vimeo to download high-resolution MP4 video and
+                                320kbps MP3 audio without popups, redirects, or trackers.
+                            </p>
+
+                            <div class="featured-stats-row">
+                                <div class="stat-item">
+                                    <span class="stat-number" style="font-size: 1.85rem;"><span
+                                            class="text-gradient">100%</span></span>
+                                    <span class="stat-label">Ad-Free & Free</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" style="font-size: 1.85rem;"><span
+                                            class="text-gradient">1080p</span></span>
+                                    <span class="stat-label">Max Quality</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" style="font-size: 1.85rem;"><span
+                                            class="text-gradient">0ms</span></span>
+                                    <span class="stat-label">Wait Time</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 1.75rem;">
+                                <a href="video-download/index.html" class="btn-primary animate-pulse-glow">
+                                    <span>Launch ToneTunnel</span>
+                                    <svg class="btn-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M7 7h10v10"></path>
+                                        <path d="M7 17 17 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Connected Projects Timeline -->
+            <div class="timeline-container">
+                <div class="timeline-line" aria-hidden="true"></div>
+
+                <ul class="timeline-list">
+                    <!-- Project 1: Simple Video Downloader -->
+                    <li class="timeline-item reveal">
+                        <span class="timeline-dot" aria-hidden="true"></span>
+                        <article class="timeline-card">
+                            <div class="timeline-header">
+                                <div class="timeline-meta">
+                                    <div class="timeline-icon-box">📥</div>
+                                    <div>
+                                        <p class="font-mono"
+                                            style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted-foreground);">
+                                            Desktop Utility · Python
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="tag-badge">Release Out</span>
+                            </div>
+
+                            <h3 class="timeline-title">
+                                <span>Adless and Limitless Video Downloader</span>
+                                <a href="https://github.com/nuzkeser/Simple-Video-Downloader" target="_blank"
+                                    rel="noopener noreferrer" class="featured-link-sub" style="font-size: 0.7rem;">
+                                    <span>GitHub</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M7 7h10v10"></path>
+                                        <path d="M7 17 17 7"></path>
+                                    </svg>
+                                </a>
+                            </h3>
+
+                            <p class="timeline-desc">
+                                A desktop downloader engineered to bypass shady, ad-bloated websites. Supports
+                                high-quality video and audio extraction with customizable output formats and bitrates,
+                                designed with simplicity and reliability in mind.
+                            </p>
+
+                            <div class="timeline-tags">
+                                <span class="tag-badge-muted">Python</span>
+                                <span class="tag-badge-muted">GUI</span>
+                                <span class="tag-badge-muted">High Bitrate</span>
+                                <span class="tag-badge-muted">Open Source</span>
+                            </div>
+                        </article>
+                    </li>
+
+                    <!-- Project 2: Virtual Multi-Output Router -->
+                    <li class="timeline-item reveal">
+                        <span class="timeline-dot" aria-hidden="true"></span>
+                        <article class="timeline-card">
+                            <div class="timeline-header">
+                                <div class="timeline-meta">
+                                    <div class="timeline-icon-box">🎧</div>
+                                    <div>
+                                        <p class="font-mono"
+                                            style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted-foreground);">
+                                            Audio Routing · Windows
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="tag-badge">Beta for Windows</span>
+                            </div>
+
+                            <h3 class="timeline-title">
+                                <span>Virtual Multi-Output Audio Router</span>
+                                <a href="https://github.com/nuzkeser/Multi-Output-Router" target="_blank"
+                                    rel="noopener noreferrer" class="featured-link-sub" style="font-size: 0.7rem;">
+                                    <span>GitHub</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M7 7h10v10"></path>
+                                        <path d="M7 17 17 7"></path>
+                                    </svg>
+                                </a>
+                            </h3>
+
+                            <p class="timeline-desc">
+                                Windows does not natively allow routing master audio to two separate playback devices
+                                (e.g., wired headphones and Bluetooth speakers) with ease. This tool bridges that gap by
+                                creating virtual output routing with synchronized, low-latency audio mirroring.
+                            </p>
+
+                            <div class="timeline-tags">
+                                <span class="tag-badge-muted">Windows Audio API</span>
+                                <span class="tag-badge-muted">C#</span>
+                                <span class="tag-badge-muted">Low Latency</span>
+                                <span class="tag-badge-muted">Multi-Device</span>
+                            </div>
+                        </article>
+                    </li>
+
+                    <!-- Project 3: 2D Rogue-Like Game (Godot) -->
+                    <li class="timeline-item reveal">
+                        <span class="timeline-dot" aria-hidden="true"></span>
+                        <article class="timeline-card">
+                            <div class="timeline-header">
+                                <div class="timeline-meta">
+                                    <div class="timeline-icon-box">🎮</div>
+                                    <div>
+                                        <p class="font-mono"
+                                            style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted-foreground);">
+                                            Game Development · Godot
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="tag-badge">Concept & Learning</span>
+                            </div>
+
+                            <h3 class="timeline-title">
+                                <span>2D Rogue-Like Game</span>
+                            </h3>
+
+                            <p class="timeline-desc">
+                                Exploring procedural generation algorithms and custom 2D mechanics inside the Godot
+                                Engine. Features planned include dungeon crawling rooms, upgrade trees, and responsive
+                                combat dynamics while mastering GDScript and game architecture.
+                            </p>
+
+                            <div class="timeline-tags">
+                                <span class="tag-badge-muted">Godot Engine</span>
+                                <span class="tag-badge-muted">GDScript</span>
+                                <span class="tag-badge-muted">Procedural Generation</span>
+                                <span class="tag-badge-muted">Pixel Mechanics</span>
+                            </div>
+                        </article>
+                    </li>
+
+                    <!-- Project 4: Undertale Red & Yellow Turkish Patch -->
+                    <li class="timeline-item reveal">
+                        <span class="timeline-dot" aria-hidden="true"></span>
+                        <article class="timeline-card">
+                            <div class="timeline-header">
+                                <div class="timeline-meta">
+                                    <div class="timeline-icon-box">🪡</div>
+                                    <div>
+                                        <p class="font-mono"
+                                            style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted-foreground);">
+                                            Game Localization · Community
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="tag-badge">In Progress</span>
+                            </div>
+
+                            <h3 class="timeline-title">
+                                <span>Undertale Red & Yellow Turkish Patch</span>
+                            </h3>
+
+                            <p class="timeline-desc">
+                                Translating and localizing the beloved Undertale fan project into Turkish. Involves
+                                translating in-game dialogue, adapting character humor, font editing for Turkish special
+                                characters (ç, ğ, ı, ö, ş, ü), and sprite modifications.
+                            </p>
+
+                            <div class="timeline-tags">
+                                <span class="tag-badge-muted">Localization</span>
+                                <span class="tag-badge-muted">Translation</span>
+                                <span class="tag-badge-muted">Font Engineering</span>
+                                <span class="tag-badge-muted">Community Project</span>
+                            </div>
+                        </article>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section id="contact" class="section-divider section-pad">
+            <div class="max-w-container">
+                <div class="reveal">
+                    <div class="cta-card">
+                        <div class="cta-glow-1"></div>
+                        <div class="cta-glow-2"></div>
+
+                        <div class="cta-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z">
+                                </path>
+                                <path d="M20 2v4"></path>
+                                <path d="M22 4h-4"></path>
+                                <circle cx="4" cy="20" r="2"></circle>
+                            </svg>
+                        </div>
+
+                        <h2 class="cta-title">
+                            Have an idea, suggestion, or feedback?
+                        </h2>
+
+                        <p class="cta-desc">
+                            I am actively improving these tools and experimenting with new software concepts. If you
+                            tested one of the utilities or want to collaborate, feel free to connect!
+                        </p>
+
+                        <div class="cta-actions">
+                            <a href="https://github.com/nuzkeser" target="_blank" rel="noopener noreferrer"
+                                class="btn-primary animate-pulse-glow">
+                                <span>Check Out on GitHub</span>
+                                <svg class="btn-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14"></path>
+                                    <path d="m12 5 7 7-7 7"></path>
+                                </svg>
+                            </a>
+                            <a href="index.html" class="btn-secondary">
+                                <span>Back to Home</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
-
-                <div class="cell_description">
-                    <br>
-                    I am working on a 2D Rouge-Like game with Godot. However, I need to learn the engine and stuff
-                    goes...
-                    <br>
-                    <br>
-                    [Not Started]
-                    <br>
-                    <br>
-                    [Hopefully I will start it]
-                </div>
-            </a>
-
-            <a class="cell">
-                <div class="cell_icon">🪡</div>
-                <div class="cell_title">
-                    Undertale
-                    <br>
-                    Red & Yellow
-                    <br>
-                    Turkish Patch
-                </div>
-                <div class="cell_description">I am translating this fangame into Turkish.
-                    <br>
-                    <br>
-                    [In Progress]
-                </div>
-            </a>
-
-        </main>
-
-        <footer class="status_message">
-            <div class="little_texts">
-                I am doing these projects for fun and to have some experience.
             </div>
-        </footer>
-    </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="max-w-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="index.html" class="brand-link">
+                        <span class="brand-logo-box">N</span>
+                        <span>Nevzat Salih Uzkeser</span>
+                    </a>
+                    <p class="footer-bio">
+                        IB DP2 Student @ Bilkent Erzurum Laboratory School. Creating open-source utilities and creative
+                        tech experiments.
+                    </p>
+                </div>
+
+                <div class="footer-social-links">
+                    <a href="https://github.com/nuzkeser" target="_blank" rel="noopener noreferrer"
+                        class="footer-social-btn" aria-label="GitHub">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4">
+                            </path>
+                            <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                        </svg>
+                    </a>
+                    <a href="video-download/index.html" class="footer-social-btn"
+                        aria-label="ToneTunnel Video Downloader">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </a>
+                    <a href="projects.html" class="footer-social-btn" aria-label="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="7" height="7" x="3" y="3" rx="1"></rect>
+                            <rect width="7" height="7" x="14" y="3" rx="1"></rect>
+                            <rect width="7" height="7" x="14" y="14" rx="1"></rect>
+                            <rect width="7" height="7" x="3" y="14" rx="1"></rect>
+                        </svg>
+                    </a>
+                    <a href="resume.html" class="footer-social-btn" aria-label="Resume / CV">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© 2026 Nevzat Salih Uzkeser. All rights reserved.</span>
+                <span class="font-mono">Built with care · Erzurum, Turkey</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
     <script src="scripts/main.js"></script>
 </body>
 
