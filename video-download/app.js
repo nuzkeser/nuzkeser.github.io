@@ -51,16 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Public Cobalt API instances for direct stream download extraction (no redirects)
-    const COBALT_INSTANCES = [
-        'https://api.cobalt.tools',
-        'https://cobalt.api.kwiatekm.tokyo',
-        'https://co.wuk.sh',
-        'https://cobalt-api.kellr.dev'
-    ];
-
     // State Variables
     let hasLocalBackend = false;
+    let apiBase = ''; // Base URL for local server (e.g. 'http://127.0.0.1:8080' or window.location.origin)
+    let serverEngineInfo = null;
     let selectedType = 'video'; // 'video' or 'audio'
     let currentVideoData = null;
     let downloadHistory = [];
@@ -83,12 +77,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const qualitySelect = document.getElementById('qualitySelect');
     const formatTabs = document.querySelectorAll('.format-tab');
 
+    // Header & Status Elements
+    const engineStatusBtn = document.getElementById('engineStatusBtn');
+    const headerStatusDot = document.getElementById('headerStatusDot');
+    const headerStatusText = document.getElementById('headerStatusText');
+    const heroStatusBadge = document.getElementById('heroStatusBadge');
+    const heroPulseDot = document.getElementById('heroPulseDot');
+    const heroBadgeText = document.getElementById('heroBadgeText');
+
     // States & Results
     const loadingState = document.getElementById('loadingState');
     const loadingText = document.getElementById('loadingText');
     const errorState = document.getElementById('errorState');
     const errorMessage = document.getElementById('errorMessage');
     const retryBtn = document.getElementById('retryBtn');
+    const engineHelpBtn = document.getElementById('engineHelpBtn');
+    const fallbackExternalLink = document.getElementById('fallbackExternalLink');
     const resultSection = document.getElementById('resultSection');
 
     // Video Card Elements
@@ -122,26 +126,125 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewModalTitle = document.getElementById('previewModalTitle');
     const appToast = document.getElementById('appToast');
 
-    // 1. Check for Local yt-dlp Backend Server
-    const checkServerStatus = async () => {
-        try {
-            const res = await fetch('/api/status', { method: 'GET' });
-            if (res.ok) {
-                const data = await res.json();
-                if (data && data.has_ytdlp) {
-                    hasLocalBackend = true;
-                    const pill = document.querySelector('.pill-badge');
-                    if (pill) {
-                        pill.innerHTML = `<span class="pulse-dot" style="background-color:#10b981;box-shadow:0 0 8px #10b981;"></span><span>yt-dlp Engine Active · Direct In-Browser Downloads</span>`;
+    // Engine Setup Modal Elements
+    const engineModal = document.getElementById('engineModal');
+    const closeEngineModalBtn = document.getElementById('closeEngineModalBtn');
+    const dismissEngineModalBtn = document.getElementById('dismissEngineModalBtn');
+    const modalStatusDot = document.getElementById('modalStatusDot');
+    const modalStatusText = document.getElementById('modalStatusText');
+    const testEngineBtn = document.getElementById('testEngineBtn');
+    const copyServerCmdBtn = document.getElementById('copyServerCmdBtn');
+    const serverCmdText = document.getElementById('serverCmdText');
+
+    // 1. Intelligent Server Auto-Discovery
+    // Checks relative path first, then direct 127.0.0.1:8080 and localhost:8080
+    const checkServerStatus = async (notify = false) => {
+        const candidateHosts = [];
+
+        // If page is served over http/https, try same origin first
+        if (window.location.protocol.startsWith('http')) {
+            candidateHosts.push(window.location.origin);
+        }
+        candidateHosts.push('http://127.0.0.1:8080');
+        candidateHosts.push('http://localhost:8080');
+
+        let found = false;
+
+        for (const host of candidateHosts) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+                const res = await fetch(`${host}/api/status`, {
+                    method: 'GET',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.status === 'ok') {
+                        hasLocalBackend = true;
+                        apiBase = host;
+                        serverEngineInfo = data;
+                        found = true;
+                        updateEngineStatusUI(true, data);
+                        if (notify) {
+                            showToast('🚀 Connected to local yt-dlp download engine!');
+                        }
+                        break;
                     }
                 }
+            } catch (e) {
+                // Try next host
             }
-        } catch (e) {
-            // Running in static hosting mode
+        }
+
+        if (!found) {
             hasLocalBackend = false;
+            apiBase = '';
+            serverEngineInfo = null;
+            updateEngineStatusUI(false);
+            if (notify) {
+                showToast('⚠️ Could not connect to local server on port 8080.');
+            }
+        }
+
+        return found;
+    };
+
+    const updateEngineStatusUI = (isOnline, info = null) => {
+        if (isOnline) {
+            const verText = info && info.version ? `v${info.version}` : 'Active';
+            if (headerStatusDot) {
+                headerStatusDot.className = 'status-indicator-dot online';
+            }
+            if (headerStatusText) {
+                headerStatusText.textContent = 'Engine Online';
+            }
+            if (heroPulseDot) {
+                heroPulseDot.style.backgroundColor = '#10b981';
+                heroPulseDot.style.boxShadow = '0 0 8px #10b981';
+            }
+            if (heroBadgeText) {
+                heroBadgeText.textContent = `yt-dlp Engine Active (${verText}) · Direct Downloads`;
+            }
+            if (modalStatusDot) {
+                modalStatusDot.className = 'status-indicator-dot online';
+            }
+            if (modalStatusText) {
+                modalStatusText.textContent = `Engine Active · yt-dlp ${verText} (FFmpeg & Node Ready)`;
+            }
+        } else {
+            if (headerStatusDot) {
+                headerStatusDot.className = 'status-indicator-dot offline';
+            }
+            if (headerStatusText) {
+                headerStatusText.textContent = 'Engine Offline';
+            }
+            if (heroPulseDot) {
+                heroPulseDot.style.backgroundColor = '#f59e0b';
+                heroPulseDot.style.boxShadow = '0 0 8px #f59e0b';
+            }
+            if (heroBadgeText) {
+                heroBadgeText.textContent = 'Download Engine Offline · Click to Setup';
+            }
+            if (modalStatusDot) {
+                modalStatusDot.className = 'status-indicator-dot offline';
+            }
+            if (modalStatusText) {
+                modalStatusText.textContent = 'Server Offline (No response on port 8080)';
+            }
         }
     };
+
+    // Initial check and periodic heartbeat
     checkServerStatus();
+    setInterval(() => {
+        if (!hasLocalBackend) {
+            checkServerStatus(false);
+        }
+    }, 6000);
 
     // 2. Detect Platform from URL
     const detectPlatform = (url) => {
@@ -182,11 +285,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             } else {
                 qualitySelect.innerHTML = `
-                    <option value="1080" selected>1080p Full HD</option>
+                    <option value="max" selected>Best Available (1080p/4K)</option>
+                    <option value="1080">1080p Full HD</option>
                     <option value="720">720p HD</option>
                     <option value="480">480p SD</option>
                     <option value="360">360p</option>
-                    <option value="max">Best Available</option>
                 `;
             }
 
@@ -219,11 +322,12 @@ document.addEventListener('DOMContentLoaded', () => {
         urlInput.focus();
     });
 
-    // 5. Fetch Video Info via yt-dlp Backend OR Static OEmbed
+    // 5. Fetch Video Info
     const fetchVideoInfo = async (url) => {
-        if (hasLocalBackend) {
+        // If local yt-dlp backend is active, use it for accurate metadata
+        if (hasLocalBackend && apiBase) {
             try {
-                const res = await fetch(`/api/info?url=${encodeURIComponent(url)}`);
+                const res = await fetch(`${apiBase}/api/info?url=${encodeURIComponent(url)}`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data && !data.error) {
@@ -234,40 +338,72 @@ document.addEventListener('DOMContentLoaded', () => {
                             duration: data.duration,
                             platform: data.platform,
                             sourceUrl: url,
-                            availableHeights: data.available_heights || [1080, 720, 480, 360]
+                            availableHeights: data.available_heights || [1080, 720, 480, 360],
+                            hasLocalBackend: true
                         };
                     }
                 }
             } catch (err) {
-                console.warn('Local yt-dlp info failed, falling back to universal resolver', err);
+                console.warn('Local yt-dlp info failed:', err);
             }
         }
 
-        // Static mode universal metadata
+        // TikTok Client-Side Fallback via TikWM (Works in browser without server!)
+        if (detectPlatform(url).name === 'TikTok') {
+            try {
+                const tikRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+                if (tikRes.ok) {
+                    const tikData = await tikRes.json();
+                    if (tikData && tikData.code === 0 && tikData.data) {
+                        const d = tikData.data;
+                        return {
+                            title: d.title || 'TikTok Video',
+                            author: (d.author && (d.author.nickname || d.author.unique_id)) || 'TikTok Creator',
+                            thumbnail: d.cover || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop',
+                            duration: d.duration ? `${d.duration}s` : '',
+                            platform: 'TikTok',
+                            sourceUrl: url,
+                            availableHeights: [1080, 720],
+                            directStreams: {
+                                video: d.play || d.wmplay,
+                                audio: d.music
+                            }
+                        };
+                    }
+                }
+            } catch (e) {
+                console.warn('TikWM fetch warning:', e);
+            }
+        }
+
+        // Generic OEmbed / YouTube thumbnail extraction
+        let detectedTitle = 'Media Ready to Download';
+        let detectedAuthor = detectPlatform(url).name;
+        let detectedThumb = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop';
+
+        const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
+        if (ytMatch && ytMatch[1]) {
+            detectedThumb = `https://i.ytimg.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+        }
+
         try {
             const noembedRes = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
             if (noembedRes.ok) {
                 const data = await noembedRes.json();
                 if (data && data.title) {
-                    return {
-                        title: data.title,
-                        author: data.author_name || detectPlatform(url).name,
-                        thumbnail: data.thumbnail_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop',
-                        duration: '',
-                        platform: detectPlatform(url).name,
-                        sourceUrl: url,
-                        availableHeights: [1080, 720, 480, 360]
-                    };
+                    detectedTitle = data.title;
+                    detectedAuthor = data.author_name || detectedAuthor;
+                    if (data.thumbnail_url) detectedThumb = data.thumbnail_url;
                 }
             }
         } catch (e) {
-            console.warn('Metadata fetch warning:', e);
+            // Ignore oembed failure
         }
 
         return {
-            title: 'Media Ready to Download',
-            author: detectPlatform(url).name,
-            thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop',
+            title: detectedTitle,
+            author: detectedAuthor,
+            thumbnail: detectedThumb,
             duration: '',
             platform: detectPlatform(url).name,
             sourceUrl: url,
@@ -276,64 +412,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 6. Direct In-Browser Download Trigger
-    const startInBrowserDownload = (downloadUrl, filename) => {
-        showToast('Download started! Saving file...');
+    const startInBrowserDownload = (downloadUrl, filename, triggerBtn = null) => {
+        showToast('⏳ Preparing download... please wait');
+
+        let originalContent = '';
+        if (triggerBtn) {
+            originalContent = triggerBtn.innerHTML;
+            triggerBtn.disabled = true;
+            triggerBtn.innerHTML = `<span>⏳ Downloading...</span>`;
+        }
+
         const a = document.createElement('a');
         a.href = downloadUrl;
         a.download = filename || 'media_download';
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
+
         setTimeout(() => {
             if (a.parentNode) document.body.removeChild(a);
-        }, 1500);
-    };
-
-    // 7. Resolve Direct Stream using Cobalt API (Static Mode)
-    const requestDirectStream = async (url, isAudioOnly, quality) => {
-        const payload = {
-            url: url,
-            vQuality: quality === 'max' ? '1080' : quality,
-            isAudioOnly: isAudioOnly,
-            aFormat: 'mp3',
-            filenamePattern: 'basic'
-        };
-
-        for (const instance of COBALT_INSTANCES) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-                const response = await fetch(`${instance}/api/json`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload),
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && (data.url || (data.picker && data.picker.length > 0))) {
-                        return {
-                            streamUrl: data.url || data.picker[0].url,
-                            picker: data.picker || [],
-                            filename: data.filename || (isAudioOnly ? 'audio.mp3' : 'video.mp4')
-                        };
-                    }
-                }
-            } catch (err) {
-                continue;
+            if (triggerBtn && originalContent) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerHTML = originalContent;
             }
-        }
-        return null;
+            showToast('✅ Download initiated! Check your browser downloads.');
+        }, 3000);
     };
 
-    // 8. Main Fetch Controller
+    // 7. Main Fetch Controller
     const fetchMediaStreams = async (rawUrl) => {
         const url = rawUrl.trim();
         if (!url) return;
@@ -342,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingState.style.display = 'flex';
         loadingText.textContent = hasLocalBackend
             ? `Analyzing media stream with yt-dlp...`
-            : `Analyzing ${detectPlatform(url).name} stream...`;
+            : `Connecting to ${detectPlatform(url).name} stream...`;
 
         fetchBtn.disabled = true;
         fetchBtnText.textContent = 'Fetching...';
@@ -355,47 +461,46 @@ document.addEventListener('DOMContentLoaded', () => {
             let primaryDownloadUrl = '';
             let qualityOptions = [];
 
-            if (hasLocalBackend) {
-                // LOCAL YT-DLP ENGINE: Directly routes to our attachment stream endpoint!
-                primaryDownloadUrl = `/api/download?url=${encodeURIComponent(url)}&type=${isAudio ? 'audio' : 'video'}&quality=${quality}`;
+            if (hasLocalBackend && apiBase) {
+                // LOCAL YT-DLP ENGINE: Routes directly to our attachment stream endpoint!
+                primaryDownloadUrl = `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=${isAudio ? 'audio' : 'video'}&quality=${quality}`;
 
                 if (isAudio) {
                     qualityOptions = [
-                        { label: 'MP3 (320 kbps High)', quality: '320', url: `/api/download?url=${encodeURIComponent(url)}&type=audio&quality=320` },
-                        { label: 'MP3 (256 kbps)', quality: '256', url: `/api/download?url=${encodeURIComponent(url)}&type=audio&quality=256` },
-                        { label: 'MP3 (128 kbps)', quality: '128', url: `/api/download?url=${encodeURIComponent(url)}&type=audio&quality=128` }
+                        { label: 'MP3 (320 kbps High)', quality: '320', url: `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=audio&quality=320` },
+                        { label: 'MP3 (256 kbps)', quality: '256', url: `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=audio&quality=256` },
+                        { label: 'MP3 (128 kbps)', quality: '128', url: `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=audio&quality=128` }
                     ];
                 } else {
-                    const heights = meta.availableHeights.length > 0 ? meta.availableHeights : [1080, 720, 480, 360];
+                    const heights = meta.availableHeights && meta.availableHeights.length > 0 ? meta.availableHeights : [1080, 720, 480, 360];
                     qualityOptions = heights.slice(0, 4).map(h => ({
                         label: `${h}p HD MP4`,
                         quality: `${h}`,
-                        url: `/api/download?url=${encodeURIComponent(url)}&type=video&quality=${h}`
+                        url: `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=video&quality=${h}`
                     }));
-                    // Add an audio option as well
                     qualityOptions.push({
                         label: 'Extract Audio (MP3)',
                         quality: '320',
-                        url: `/api/download?url=${encodeURIComponent(url)}&type=audio&quality=320`
+                        url: `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=audio&quality=320`
                     });
                 }
-            } else {
-                // STATIC WEB STREAM ENGINE: Resolve direct stream URL directly into the browser
-                loadingText.textContent = `Resolving direct high-speed ${isAudio ? 'MP3' : 'MP4'} stream...`;
-                const streamResult = await requestDirectStream(url, isAudio, quality);
-
-                if (streamResult && streamResult.streamUrl) {
-                    primaryDownloadUrl = streamResult.streamUrl;
-                    if (streamResult.picker && streamResult.picker.length > 0) {
-                        qualityOptions = streamResult.picker.map(p => ({
-                            label: p.type === 'video' ? `${p.quality || 'MP4'} Video` : 'MP3 Audio',
-                            url: p.url,
-                            quality: p.quality || 'HD'
-                        }));
-                    }
+            } else if (meta.directStreams) {
+                // CLIENT-SIDE STREAM RESOLUTION (e.g. TikTok via TikWM)
+                if (isAudio && meta.directStreams.audio) {
+                    primaryDownloadUrl = meta.directStreams.audio;
                 } else {
-                    throw new Error('Unable to extract direct stream for this URL. Please verify the link is public.');
+                    primaryDownloadUrl = meta.directStreams.video;
                 }
+
+                qualityOptions = [
+                    { label: 'Original MP4 Video', quality: 'HD', url: meta.directStreams.video },
+                    { label: 'Original MP3 Audio', quality: 'Audio', url: meta.directStreams.audio }
+                ].filter(opt => !!opt.url);
+
+            } else {
+                // Local engine is offline and platform cannot be extracted purely client-side
+                showOfflineEngineNotice(url, meta);
+                return;
             }
 
             currentVideoData = {
@@ -420,13 +525,33 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingState.style.display = 'none';
             errorState.style.display = 'flex';
             errorMessage.textContent = error.message || 'Could not fetch video. Please check the URL and try again.';
+            if (fallbackExternalLink) {
+                fallbackExternalLink.href = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
+                fallbackExternalLink.style.display = 'inline-flex';
+            }
         } finally {
             fetchBtn.disabled = false;
             fetchBtnText.textContent = 'Fetch';
         }
     };
 
-    // 9. Render Result & Setup Direct In-Browser Downloads
+    // Show friendly guidance when engine is offline
+    const showOfflineEngineNotice = (url, meta) => {
+        loadingState.style.display = 'none';
+        errorState.style.display = 'flex';
+        errorMessage.innerHTML = `
+            <strong>Local Download Engine is Offline.</strong><br>
+            To download high-quality videos and MP3 audio from ${detectPlatform(url).name} with no ads or limits, start the local server in your terminal:
+            <code style="display:block;margin:0.75rem 0;padding:0.5rem;background:#040810;border-radius:6px;color:#38bdf8;font-family:monospace;">python3 video-download/server.py</code>
+        `;
+
+        if (fallbackExternalLink) {
+            fallbackExternalLink.href = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
+            fallbackExternalLink.style.display = 'inline-flex';
+        }
+    };
+
+    // 8. Render Result & Setup Direct In-Browser Downloads
     const renderResult = (data) => {
         hideAllStates();
         resultSection.style.display = 'block';
@@ -450,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const ext = data.isAudio ? 'mp3' : 'mp4';
             const filename = `${data.title.replace(/[^\w\s-]/g, '').trim() || 'media'}.${ext}`;
-            startInBrowserDownload(data.downloadUrl, filename);
+            startInBrowserDownload(data.downloadUrl, filename, primaryDownloadBtn);
         };
 
         primaryDownloadText.textContent = data.isAudio
@@ -470,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const isAud = opt.label.includes('MP3') || opt.label.includes('Audio');
                     const ext = isAud ? 'mp3' : 'mp4';
                     const filename = `${data.title.replace(/[^\w\s-]/g, '').trim() || 'media'}_${opt.quality}.${ext}`;
-                    startInBrowserDownload(opt.url, filename);
+                    startInBrowserDownload(opt.url, filename, btn);
                 };
                 additionalDownloads.appendChild(btn);
             });
@@ -485,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultSection.style.display = 'none';
     };
 
-    // 10. Form Submission
+    // 9. Form Submission
     downloadForm.addEventListener('submit', (e) => {
         e.preventDefault();
         fetchMediaStreams(urlInput.value);
@@ -495,12 +620,68 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchMediaStreams(urlInput.value);
     });
 
+    if (engineHelpBtn) {
+        engineHelpBtn.addEventListener('click', () => {
+            openEngineModal();
+        });
+    }
+
+    // 10. Engine Setup Modal Controls
+    const openEngineModal = () => {
+        checkServerStatus(false);
+        engineModal.style.display = 'grid';
+    };
+
+    const closeEngineModal = () => {
+        engineModal.style.display = 'none';
+    };
+
+    if (engineStatusBtn) {
+        engineStatusBtn.addEventListener('click', openEngineModal);
+    }
+    if (heroStatusBadge) {
+        heroStatusBadge.addEventListener('click', openEngineModal);
+    }
+    if (closeEngineModalBtn) {
+        closeEngineModalBtn.addEventListener('click', closeEngineModal);
+    }
+    if (dismissEngineModalBtn) {
+        dismissEngineModalBtn.addEventListener('click', closeEngineModal);
+    }
+    if (engineModal) {
+        engineModal.addEventListener('click', (e) => {
+            if (e.target === engineModal) closeEngineModal();
+        });
+    }
+
+    if (copyServerCmdBtn) {
+        copyServerCmdBtn.addEventListener('click', () => {
+            const cmd = serverCmdText ? serverCmdText.textContent : 'python3 video-download/server.py';
+            navigator.clipboard.writeText(cmd);
+            copyServerCmdBtn.textContent = 'Copied!';
+            showToast('Copied start command to clipboard!');
+            setTimeout(() => {
+                copyServerCmdBtn.textContent = 'Copy';
+            }, 2000);
+        });
+    }
+
+    if (testEngineBtn) {
+        testEngineBtn.addEventListener('click', async () => {
+            testEngineBtn.textContent = 'Checking...';
+            testEngineBtn.disabled = true;
+            await checkServerStatus(true);
+            testEngineBtn.textContent = 'Test Connection';
+            testEngineBtn.disabled = false;
+        });
+    }
+
     // 11. Utilities (Copy Link, QR, Preview)
     copyStreamLinkBtn.addEventListener('click', () => {
         if (!currentVideoData || !currentVideoData.downloadUrl) return;
         const fullUrl = currentVideoData.downloadUrl.startsWith('http')
             ? currentVideoData.downloadUrl
-            : `${window.location.origin}${currentVideoData.downloadUrl}`;
+            : `${apiBase || window.location.origin}${currentVideoData.downloadUrl}`;
         navigator.clipboard.writeText(fullUrl);
         showToast('Direct download link copied to clipboard!');
     });
@@ -511,22 +692,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     showQrBtn.addEventListener('click', () => {
-        if (!currentVideoData || !currentVideoData.downloadUrl) return;
+        if (!currentVideoData) return;
         qrCodeTarget.innerHTML = '';
-        const fullUrl = currentVideoData.downloadUrl.startsWith('http')
-            ? currentVideoData.downloadUrl
-            : `${window.location.origin}${currentVideoData.downloadUrl}`;
+
+        // If downloadUrl is localhost, use sourceUrl for mobile QR so mobile devices can access it!
+        let targetUrl = currentVideoData.downloadUrl;
+        if (targetUrl.includes('127.0.0.1') || targetUrl.includes('localhost') || targetUrl.startsWith('/')) {
+            targetUrl = currentVideoData.sourceUrl;
+            qrLinkText.textContent = `Original Video: ${currentVideoData.title}`;
+        } else {
+            qrLinkText.textContent = currentVideoData.title;
+        }
 
         try {
             new QRCode(qrCodeTarget, {
-                text: fullUrl,
+                text: targetUrl,
                 width: 180,
                 height: 180,
                 colorDark: '#080c16',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M
             });
-            qrLinkText.textContent = currentVideoData.title;
             qrModal.style.display = 'grid';
         } catch (e) {
             showToast('Unable to generate QR code');
@@ -648,6 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') {
             qrModal.style.display = 'none';
             previewModal.style.display = 'none';
+            if (engineModal) engineModal.style.display = 'none';
             previewMediaContainer.innerHTML = '';
         }
     });

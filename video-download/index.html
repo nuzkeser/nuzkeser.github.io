@@ -47,6 +47,10 @@
             </a>
 
             <div class="header-actions">
+                <button type="button" class="engine-status-btn" id="engineStatusBtn" title="Engine Status & Setup Guide">
+                    <span class="status-indicator-dot" id="headerStatusDot"></span>
+                    <span id="headerStatusText">Checking Engine...</span>
+                </button>
                 <a href="../index.html" class="header-link" title="Return to Nevzat's Homepage">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -70,9 +74,9 @@
         <main class="main-content">
             <!-- Hero Section -->
             <section class="hero-section">
-                <div class="pill-badge">
-                    <span class="pulse-dot"></span>
-                    <span>100% Ad-Free · Universal Web Downloader</span>
+                <div class="pill-badge" id="heroStatusBadge" style="cursor: pointer;" title="Click to view engine setup guide">
+                    <span class="pulse-dot" id="heroPulseDot"></span>
+                    <span id="heroBadgeText">Checking Local Engine...</span>
                 </div>
 
                 <h1 class="hero-title">
@@ -189,7 +193,8 @@
                 <p class="state-desc" id="errorMessage">Please check the URL or try another link.</p>
                 <div class="error-actions">
                     <button type="button" class="btn-action-small" id="retryBtn">Try Again</button>
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="btn-action-small secondary" id="fallbackExternalLink" style="display: none;">Open Direct Link</a>
+                    <button type="button" class="btn-action-small secondary" id="engineHelpBtn">Start Engine Guide</button>
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="btn-action-small secondary" id="fallbackExternalLink" style="display: none;">Open External Tool</a>
                 </div>
             </div>
 
@@ -342,6 +347,56 @@
             <h3 class="modal-title" id="previewModalTitle">Media Preview</h3>
             <div class="preview-media-container" id="previewMediaContainer">
                 <!-- Video or Audio element injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Local Engine Setup Modal -->
+    <div class="modal-backdrop" id="engineModal" style="display: none;">
+        <div class="modal-card engine-modal-card">
+            <button type="button" class="modal-close" id="closeEngineModalBtn">✕</button>
+            <h3 class="modal-title">ToneTunnel Download Engine</h3>
+            <p class="modal-subtitle">Direct, unthrottled downloads from YouTube, Instagram, TikTok, Twitter/X, Reddit, and Vimeo powered by local yt-dlp.</p>
+
+            <div class="engine-status-box">
+                <span class="engine-status-badge" id="modalEngineBadge">
+                    <span class="status-indicator-dot" id="modalStatusDot"></span>
+                    <span id="modalStatusText">Checking connection...</span>
+                </span>
+                <button type="button" class="btn-copy-code" id="testEngineBtn">Test Connection</button>
+            </div>
+
+            <div id="modalInstructionsSection">
+                <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                    To download media in high quality without ads, limits, or external redirects, start the engine in your terminal:
+                </p>
+
+                <div class="code-box-wrapper">
+                    <div class="code-box-header">
+                        <span>TERMINAL (WORKSPACE ROOT)</span>
+                        <button type="button" class="btn-copy-code" id="copyServerCmdBtn">Copy</button>
+                    </div>
+                    <pre class="code-box"><code id="serverCmdText">python3 video-download/server.py</code></pre>
+                </div>
+
+                <ul class="engine-steps">
+                    <li>
+                        <span class="step-num">1</span>
+                        <span>Runs the server locally on <code>http://localhost:8080</code></span>
+                    </li>
+                    <li>
+                        <span class="step-num">2</span>
+                        <span>Uses local <code>yt-dlp</code> + <code>ffmpeg</code> for direct file streaming</span>
+                    </li>
+                    <li>
+                        <span class="step-num">3</span>
+                        <span>Files save straight to your browser with zero popups or tracking</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="engine-modal-actions">
+                <button type="button" class="btn-action-small" id="dismissEngineModalBtn">Close</button>
             </div>
         </div>
     </div>
