@@ -102,6 +102,8 @@ class ToneTunnelHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, HEAD')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, Range, Authorization, X-Requested-With')
         self.send_header('Access-Control-Expose-Headers', 'Content-Disposition, Content-Length, Content-Type')
+        # Lets the public GitHub Pages site reach this localhost server (Chrome Private Network Access)
+        self.send_header('Access-Control-Allow-Private-Network', 'true')
 
     def handle_status(self):
         """Health check endpoint to tell client yt-dlp is available."""

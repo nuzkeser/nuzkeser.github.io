@@ -1168,6 +1168,42 @@ body {
     box-shadow: 0 0 8px #ef4444;
 }
 
+/* Serverless Browser Mode (GitHub Pages) */
+.status-indicator-dot.browser {
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+    animation: browserModePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes browserModePulse {
+    0%, 100% { box-shadow: 0 0 4px var(--primary); }
+    50% { box-shadow: 0 0 12px var(--primary); }
+}
+
+.mode-list {
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+    margin: 1rem 0;
+    padding: 0;
+}
+
+.mode-list li {
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.mode-list li strong {
+    display: block;
+    color: var(--text-main);
+    margin-bottom: 0.15rem;
+}
+
 .engine-modal-card {
     max-width: 32rem;
     text-align: left;

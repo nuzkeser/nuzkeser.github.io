@@ -76,7 +76,7 @@
             <section class="hero-section">
                 <div class="pill-badge" id="heroStatusBadge" style="cursor: pointer;" title="Click to view engine setup guide">
                     <span class="pulse-dot" id="heroPulseDot"></span>
-                    <span id="heroBadgeText">Checking Local Engine...</span>
+                    <span id="heroBadgeText">Initializing download engine...</span>
                 </div>
 
                 <h1 class="hero-title">
@@ -160,15 +160,20 @@
 
                 <!-- Supported Platforms Bar -->
                 <div class="supported-platforms">
-                    <span class="supported-label">Supported:</span>
+                    <span class="supported-label">Instant in browser:</span>
                     <div class="platform-chips">
-                        <span class="platform-chip"><span class="chip-dot youtube"></span>YouTube</span>
-                        <span class="platform-chip"><span class="chip-dot tiktok"></span>TikTok</span>
-                        <span class="platform-chip"><span class="chip-dot instagram"></span>Instagram</span>
-                        <span class="platform-chip"><span class="chip-dot twitter"></span>Twitter / X</span>
-                        <span class="platform-chip"><span class="chip-dot reddit"></span>Reddit</span>
-                        <span class="platform-chip"><span class="chip-dot vimeo"></span>Vimeo</span>
-                        <span class="platform-chip"><span class="chip-dot soundcloud"></span>SoundCloud</span>
+                        <span class="platform-chip" title="Works everywhere, including GitHub Pages"><span class="chip-dot tiktok"></span>TikTok</span>
+                        <span class="platform-chip" title="Works everywhere, including GitHub Pages"><span class="chip-dot twitter"></span>Twitter / X</span>
+                        <span class="platform-chip" title="Works everywhere, including GitHub Pages"><span class="chip-dot reddit"></span>Reddit</span>
+                    </div>
+                </div>
+                <div class="supported-platforms" style="margin-top: 0.6rem;">
+                    <span class="supported-label">With local engine:</span>
+                    <div class="platform-chips">
+                        <span class="platform-chip" title="Requires python3 video-download/server.py"><span class="chip-dot youtube"></span>YouTube</span>
+                        <span class="platform-chip" title="Requires python3 video-download/server.py"><span class="chip-dot instagram"></span>Instagram</span>
+                        <span class="platform-chip" title="Requires python3 video-download/server.py"><span class="chip-dot vimeo"></span>Vimeo</span>
+                        <span class="platform-chip" title="Requires python3 video-download/server.py"><span class="chip-dot soundcloud"></span>SoundCloud</span>
                     </div>
                 </div>
             </section>
@@ -193,7 +198,7 @@
                 <p class="state-desc" id="errorMessage">Please check the URL or try another link.</p>
                 <div class="error-actions">
                     <button type="button" class="btn-action-small" id="retryBtn">Try Again</button>
-                    <button type="button" class="btn-action-small secondary" id="engineHelpBtn">Start Engine Guide</button>
+                    <button type="button" class="btn-action-small secondary" id="engineHelpBtn">How It Works</button>
                     <a href="#" target="_blank" rel="noopener noreferrer" class="btn-action-small secondary" id="fallbackExternalLink" style="display: none;">Open External Tool</a>
                 </div>
             </div>
@@ -356,7 +361,7 @@
         <div class="modal-card engine-modal-card">
             <button type="button" class="modal-close" id="closeEngineModalBtn">✕</button>
             <h3 class="modal-title">ToneTunnel Download Engine</h3>
-            <p class="modal-subtitle">Direct, unthrottled downloads from YouTube, Instagram, TikTok, Twitter/X, Reddit, and Vimeo powered by local yt-dlp.</p>
+            <p class="modal-subtitle">ToneTunnel picks the best engine automatically. No setup is needed for TikTok, Twitter / X and Reddit.</p>
 
             <div class="engine-status-box">
                 <span class="engine-status-badge" id="modalEngineBadge">
@@ -366,9 +371,20 @@
                 <button type="button" class="btn-copy-code" id="testEngineBtn">Test Connection</button>
             </div>
 
+            <ul class="mode-list">
+                <li>
+                    <strong>⚡ Browser Mode (default, works on GitHub Pages)</strong>
+                    TikTok (no watermark + MP3 sound), Twitter / X (all MP4 qualities) and Reddit are resolved directly in your browser through free public APIs. No server or install required.
+                </li>
+                <li>
+                    <strong>🚀 Local yt-dlp Engine (optional)</strong>
+                    Unlocks YouTube, Instagram, Vimeo, SoundCloud and 1000+ sites with MP3 conversion. Runs on your own computer and is auto-detected.
+                </li>
+            </ul>
+
             <div id="modalInstructionsSection">
                 <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-                    To download media in high quality without ads, limits, or external redirects, start the engine in your terminal:
+                    To enable the local engine, run this in a terminal from the project folder (requires <code>pip install yt-dlp</code>):
                 </p>
 
                 <div class="code-box-wrapper">
@@ -386,11 +402,11 @@
                     </li>
                     <li>
                         <span class="step-num">2</span>
-                        <span>Uses local <code>yt-dlp</code> + <code>ffmpeg</code> for direct file streaming</span>
+                        <span>Reload this page and the status switches to <strong>Engine Online</strong> automatically</span>
                     </li>
                     <li>
                         <span class="step-num">3</span>
-                        <span>Files save straight to your browser with zero popups or tracking</span>
+                        <span>Uses <code>yt-dlp</code> + <code>ffmpeg</code> to stream files straight to your browser</span>
                     </li>
                 </ul>
             </div>
