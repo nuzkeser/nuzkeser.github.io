@@ -51,6 +51,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Environment & Shared Helpers
+    // GitHub Pages is static hosting: no Python backend can run there, so we use
+    // public CORS-enabled APIs ("Browser Mode") and only probe localhost once.
+    const IS_GITHUB_PAGES = /\.github\.io$/i.test(window.location.hostname);
+    const FALLBACK_THUMB = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop';
+
+    const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+
+    // Keeps Unicode (Turkish, Cyrillic, emoji...) and strips only characters illegal in filenames
+    const safeFilename = (name) => String(name || '')
+        .replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 100) || 'media';
+
+    const formatSeconds = (sec) => {
+        const total = Math.round(Number(sec) || 0);
+        if (!total) return '';
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        return h > 0
+            ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+            : `${m}:${String(s).padStart(2, '0')}`;
+    };
+
+    const fetchJson = async (url, timeoutMs = 12000) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const res = await fetch(url, { signal: controller.signal, headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error(`Service responded with HTTP ${res.status}`);
+            return await res.json();
+        } catch (err) {
+            if (err.name === 'AbortError') throw new Error('The download service took too long to respond. Please try again.');
+            throw err;
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    };
+
     // State Variables
     let hasLocalBackend = false;
     let apiBase = ''; // Base URL for local server (e.g. 'http://127.0.0.1:8080' or window.location.origin)
@@ -141,8 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkServerStatus = async (notify = false) => {
         const candidateHosts = [];
 
-        // If page is served over http/https, try same origin first
-        if (window.location.protocol.startsWith('http')) {
+        // If page is served over http/https by server.py, try same origin first
+        // (skipped on GitHub Pages, which can never host the API)
+        if (window.location.protocol.startsWith('http') && !IS_GITHUB_PAGES) {
             candidateHosts.push(window.location.origin);
         }
         candidateHosts.push('http://127.0.0.1:8080');
@@ -186,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             serverEngineInfo = null;
             updateEngineStatusUI(false);
             if (notify) {
-                showToast('⚠️ Could not connect to local server on port 8080.');
+                showToast('ℹ️ Local engine not found — Browser Mode is active (TikTok, X & Reddit).');
             }
         }
 
@@ -216,35 +260,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalStatusText.textContent = `Engine Active · yt-dlp ${verText} (FFmpeg & Node Ready)`;
             }
         } else {
+            // No local engine: fall back to serverless Browser Mode
             if (headerStatusDot) {
-                headerStatusDot.className = 'status-indicator-dot offline';
+                headerStatusDot.className = 'status-indicator-dot browser';
             }
             if (headerStatusText) {
-                headerStatusText.textContent = 'Engine Offline';
+                headerStatusText.textContent = 'Browser Mode';
             }
             if (heroPulseDot) {
-                heroPulseDot.style.backgroundColor = '#f59e0b';
-                heroPulseDot.style.boxShadow = '0 0 8px #f59e0b';
+                heroPulseDot.style.backgroundColor = '#38bdf8';
+                heroPulseDot.style.boxShadow = '0 0 8px #38bdf8';
             }
             if (heroBadgeText) {
-                heroBadgeText.textContent = 'Download Engine Offline · Click to Setup';
+                heroBadgeText.textContent = 'Browser Mode · TikTok, X & Reddit download instantly';
             }
             if (modalStatusDot) {
-                modalStatusDot.className = 'status-indicator-dot offline';
+                modalStatusDot.className = 'status-indicator-dot browser';
             }
             if (modalStatusText) {
-                modalStatusText.textContent = 'Server Offline (No response on port 8080)';
+                modalStatusText.textContent = 'Browser Mode active · Local engine not detected (optional)';
             }
         }
     };
 
-    // Initial check and periodic heartbeat
+    // Initial check. Periodic heartbeat only when running locally — on GitHub Pages
+    // repeatedly probing localhost would just spam the console with failed requests.
     checkServerStatus();
-    setInterval(() => {
-        if (!hasLocalBackend) {
-            checkServerStatus(false);
-        }
-    }, 6000);
+    if (!IS_GITHUB_PAGES) {
+        setInterval(() => {
+            if (!hasLocalBackend) {
+                checkServerStatus(false);
+            }
+        }, 6000);
+    }
 
     // 2. Detect Platform from URL
     const detectPlatform = (url) => {
@@ -334,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         return {
                             title: data.title,
                             author: data.author,
-                            thumbnail: data.thumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop',
+                            thumbnail: data.thumbnail || FALLBACK_THUMB,
                             duration: data.duration,
                             platform: data.platform,
                             sourceUrl: url,
@@ -348,38 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // TikTok Client-Side Fallback via TikWM (Works in browser without server!)
-        if (detectPlatform(url).name === 'TikTok') {
-            try {
-                const tikRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
-                if (tikRes.ok) {
-                    const tikData = await tikRes.json();
-                    if (tikData && tikData.code === 0 && tikData.data) {
-                        const d = tikData.data;
-                        return {
-                            title: d.title || 'TikTok Video',
-                            author: (d.author && (d.author.nickname || d.author.unique_id)) || 'TikTok Creator',
-                            thumbnail: d.cover || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop',
-                            duration: d.duration ? `${d.duration}s` : '',
-                            platform: 'TikTok',
-                            sourceUrl: url,
-                            availableHeights: [1080, 720],
-                            directStreams: {
-                                video: d.play || d.wmplay,
-                                audio: d.music
-                            }
-                        };
-                    }
-                }
-            } catch (e) {
-                console.warn('TikWM fetch warning:', e);
-            }
-        }
-
         // Generic OEmbed / YouTube thumbnail extraction
         let detectedTitle = 'Media Ready to Download';
         let detectedAuthor = detectPlatform(url).name;
-        let detectedThumb = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop';
+        let detectedThumb = FALLBACK_THUMB;
 
         const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
         if (ytMatch && ytMatch[1]) {
@@ -411,32 +431,228 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    // 6. Direct In-Browser Download Trigger
-    const startInBrowserDownload = (downloadUrl, filename, triggerBtn = null) => {
-        showToast('⏳ Preparing download... please wait');
+    // 5b. Browser Mode Resolvers (serverless — works on GitHub Pages)
+    // Each resolver returns { title, author, thumbnail, duration, platform, options[] }
+    // where options are sorted best-first: { label, quality, url, kind: 'video'|'audio', ext, height }
 
-        let originalContent = '';
-        if (triggerBtn) {
-            originalContent = triggerBtn.innerHTML;
-            triggerBtn.disabled = true;
-            triggerBtn.innerHTML = `<span>⏳ Downloading...</span>`;
+    // TikTok → TikWM public API (CORS-enabled, watermark-free streams)
+    const resolveTikTok = async (url) => {
+        const json = await fetchJson(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}&hd=1`);
+        if (!json || json.code !== 0 || !json.data) {
+            throw new Error((json && json.msg) || 'TikTok video not found. Make sure the link is public.');
+        }
+        const d = json.data;
+        const abs = (u) => (u && u.startsWith('/') ? `https://www.tikwm.com${u}` : u);
+        const options = [];
+        if (d.hdplay) options.push({ label: 'HD MP4 (No Watermark)', quality: 'HD', url: abs(d.hdplay), kind: 'video', ext: 'mp4', height: 1080 });
+        if (d.play) options.push({ label: 'MP4 (No Watermark)', quality: 'SD', url: abs(d.play), kind: 'video', ext: 'mp4', height: 720 });
+        if (d.wmplay) options.push({ label: 'MP4 (Watermarked)', quality: 'WM', url: abs(d.wmplay), kind: 'video', ext: 'mp4', height: 720 });
+        if (d.music) options.push({ label: 'Original Sound (MP3)', quality: 'Audio', url: abs(d.music), kind: 'audio', ext: 'mp3' });
+
+        return {
+            title: d.title || 'TikTok Video',
+            author: (d.author && (d.author.nickname || d.author.unique_id)) || 'TikTok Creator',
+            thumbnail: abs(d.origin_cover || d.cover),
+            duration: formatSeconds(d.duration),
+            platform: 'TikTok',
+            options
+        };
+    };
+
+    // Twitter / X → FxTwitter public API (CORS-enabled, direct MP4 variants)
+    const resolveTwitter = async (url) => {
+        const match = url.match(/(?:twitter\.com|x\.com)\/(?:[\w.-]+|i(?:\/web)?)\/status(?:es)?\/(\d+)/i);
+        if (!match) throw new Error('Could not find a post ID in this X/Twitter link.');
+
+        const json = await fetchJson(`https://api.fxtwitter.com/status/${match[1]}`);
+        if (!json || json.code !== 200 || !json.tweet) {
+            throw new Error((json && json.message) || 'Post not found. It may be private, deleted, or age-restricted.');
+        }
+        const t = json.tweet;
+        const media = t.media || {};
+        const videos = media.videos || (media.all || []).filter(m => m.type === 'video' || m.type === 'gif');
+        if (!videos.length) throw new Error('This post does not contain a video.');
+
+        const options = [];
+        const seen = new Set();
+        videos.forEach((v, idx) => {
+            const prefix = videos.length > 1 ? `#${idx + 1} · ` : '';
+            const variants = (v.formats || v.variants || [])
+                .filter(f => f.url && (f.container === 'mp4' || f.content_type === 'video/mp4' || /\.mp4(\?|$)/i.test(f.url)))
+                .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0));
+            if (!variants.length && v.url) variants.push({ url: v.url });
+
+            variants.forEach(f => {
+                if (seen.has(f.url)) return;
+                seen.add(f.url);
+                const dims = f.url.match(/\/(\d{2,4})x(\d{2,4})\//);
+                const h = dims ? Math.min(+dims[1], +dims[2]) : (v.width && v.height ? Math.min(v.width, v.height) : 0);
+                options.push({
+                    label: `${prefix}${h ? `${h}p ` : ''}MP4`,
+                    quality: h ? `${h}p` : 'MP4',
+                    url: f.url,
+                    kind: 'video',
+                    ext: 'mp4',
+                    height: h
+                });
+            });
+        });
+
+        const text = (t.text || '').replace(/https?:\/\/\S+/g, '').trim();
+        const author = t.author ? `${t.author.name} (@${t.author.screen_name})` : 'X User';
+        return {
+            title: text ? (text.length > 90 ? `${text.slice(0, 90)}…` : text) : `Video by ${author}`,
+            author,
+            thumbnail: videos[0].thumbnail_url,
+            duration: formatSeconds(videos[0].duration),
+            platform: 'Twitter / X',
+            options
+        };
+    };
+
+    // Reddit → public .json endpoint (Reddit-hosted v.redd.it videos)
+    const resolveReddit = async (url) => {
+        if (/reddit\.com\/r\/[\w.-]+\/s\//i.test(url)) {
+            throw new Error('Reddit share links (/s/...) can\'t be resolved in the browser. Open the post and copy the full URL from the address bar.');
+        }
+        let clean = url.split('#')[0].split('?')[0]
+            .replace(/^https?:\/\/(?:old\.|new\.|m\.|np\.)?reddit\.com/i, 'https://www.reddit.com')
+            .replace(/\/+$/, '');
+
+        const json = await fetchJson(`${clean}.json?raw_json=1`);
+        const post = json && json[0] && json[0].data && json[0].data.children[0] && json[0].data.children[0].data;
+        if (!post) throw new Error('Reddit post not found.');
+
+        const src = (post.crosspost_parent_list && post.crosspost_parent_list[0]) || post;
+        const rv = (src.secure_media && src.secure_media.reddit_video)
+            || (src.media && src.media.reddit_video)
+            || (src.preview && src.preview.reddit_video_preview);
+        if (!rv || !rv.fallback_url) {
+            throw new Error('This Reddit post does not contain a Reddit-hosted video.');
         }
 
+        const videoUrl = rv.fallback_url.split('?')[0];
+        const base = videoUrl.replace(/\/[^/]+$/, '');
+        const h = Math.min(rv.width || 0, rv.height || 0) || rv.height || 0;
+        const options = [
+            { label: `${h ? `${h}p ` : ''}MP4 (video track, no sound)`, quality: h ? `${h}p` : 'MP4', url: videoUrl, kind: 'video', ext: 'mp4', height: h },
+            { label: 'Audio Track (M4A)', quality: 'Audio', url: `${base}/DASH_AUDIO_128.mp4`, kind: 'audio', ext: 'm4a' }
+        ];
+
+        let thumb = '';
+        try { thumb = post.preview.images[0].source.url; } catch (e) { /* no preview */ }
+        if (!thumb && /^https?:/.test(post.thumbnail || '')) thumb = post.thumbnail;
+
+        return {
+            title: post.title || 'Reddit Video',
+            author: `u/${post.author} · r/${post.subreddit}`,
+            thumbnail: thumb,
+            duration: formatSeconds(rv.duration),
+            platform: 'Reddit',
+            options
+        };
+    };
+
+    const BROWSER_RESOLVERS = {
+        'TikTok': resolveTikTok,
+        'Twitter / X': resolveTwitter,
+        'Reddit': resolveReddit
+    };
+
+    const getBrowserResolver = (url) => BROWSER_RESOLVERS[detectPlatform(url).name] || null;
+
+    // Choose the best option matching the selected format tab and quality cap
+    const pickPrimaryOption = (options, isAudio, quality) => {
+        const videos = options.filter(o => o.kind === 'video');
+        const audios = options.filter(o => o.kind === 'audio');
+        if (isAudio) {
+            if (audios.length) return { primary: audios[0] };
+            return { primary: videos[0], note: 'ℹ️ Audio-only isn\'t available for this platform in Browser Mode — showing the video instead.' };
+        }
+        if (!videos.length) return { primary: audios[0] };
+        if (quality !== 'max') {
+            const cap = parseInt(quality, 10);
+            const fit = videos.find(v => v.height && v.height <= cap);
+            if (fit) return { primary: fit };
+        }
+        return { primary: videos[0] };
+    };
+
+    // 6. Direct In-Browser Download Trigger
+    const triggerAnchorDownload = (href, filename, newTab = false) => {
         const a = document.createElement('a');
-        a.href = downloadUrl;
+        a.href = href;
         a.download = filename || 'media_download';
+        if (newTab) {
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+        }
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
+        setTimeout(() => a.remove(), 1000);
+    };
 
-        setTimeout(() => {
-            if (a.parentNode) document.body.removeChild(a);
-            if (triggerBtn && originalContent) {
-                triggerBtn.disabled = false;
-                triggerBtn.innerHTML = originalContent;
+    const startInBrowserDownload = async (downloadUrl, filename, triggerBtn = null) => {
+        if (!downloadUrl) return;
+
+        const originalContent = triggerBtn ? triggerBtn.innerHTML : '';
+        const setLabel = (txt) => { if (triggerBtn) triggerBtn.innerHTML = `<span>${txt}</span>`; };
+        const restore = () => {
+            if (!triggerBtn) return;
+            triggerBtn.disabled = false;
+            triggerBtn.innerHTML = originalContent;
+        };
+        if (triggerBtn) triggerBtn.disabled = true;
+
+        // Local yt-dlp engine sends Content-Disposition: let the browser handle it natively
+        if (apiBase && downloadUrl.startsWith(apiBase)) {
+            setLabel('⏳ Processing...');
+            showToast('⏳ Engine is preparing your file... please wait');
+            triggerAnchorDownload(downloadUrl, filename);
+            setTimeout(restore, 3000);
+            return;
+        }
+
+        // Browser Mode: cross-origin `download` attributes are ignored by browsers,
+        // so fetch the media as a Blob (CDNs are CORS-enabled) to force a real file save.
+        try {
+            setLabel('⏳ Starting...');
+            const res = await fetch(downloadUrl, { referrerPolicy: 'no-referrer' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            const total = Number(res.headers.get('Content-Length')) || 0;
+            let blob;
+            if (res.body && typeof res.body.getReader === 'function') {
+                const reader = res.body.getReader();
+                const chunks = [];
+                let received = 0;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    received += value.length;
+                    setLabel(total
+                        ? `⏳ Downloading ${Math.min(100, Math.round((received / total) * 100))}%`
+                        : `⏳ Downloading ${(received / 1048576).toFixed(1)} MB`);
+                }
+                blob = new Blob(chunks, { type: res.headers.get('Content-Type') || 'application/octet-stream' });
+            } else {
+                blob = await res.blob();
             }
-            showToast('✅ Download initiated! Check your browser downloads.');
-        }, 3000);
+
+            const objectUrl = URL.createObjectURL(blob);
+            triggerAnchorDownload(objectUrl, filename);
+            setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+            showToast('✅ Download complete! Check your downloads folder.');
+        } catch (err) {
+            // CDN refused CORS → open the raw file so the user can still save it
+            console.warn('Blob download failed, opening direct link instead:', err);
+            triggerAnchorDownload(downloadUrl, filename, true);
+            showToast('↗ Opened in a new tab — right-click the video and choose "Save video as…"');
+        } finally {
+            restore();
+        }
     };
 
     // 7. Main Fetch Controller
@@ -454,14 +670,53 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBtnText.textContent = 'Fetching...';
 
         try {
-            const meta = await fetchVideoInfo(url);
             const isAudio = selectedType === 'audio';
             const quality = qualitySelect.value;
 
+            // BROWSER MODE (GitHub Pages / no local engine)
+            if (!(hasLocalBackend && apiBase)) {
+                const resolver = getBrowserResolver(url);
+                if (!resolver) {
+                    showUnsupportedNotice(url);
+                    return;
+                }
+
+                const resolved = await resolver(url);
+                if (!resolved.options || resolved.options.length === 0) {
+                    throw new Error('No downloadable media was found at this link.');
+                }
+
+                const { primary, note } = pickPrimaryOption(resolved.options, isAudio, quality);
+                if (note) showToast(note);
+
+                currentVideoData = {
+                    title: resolved.title,
+                    author: resolved.author,
+                    thumbnail: resolved.thumbnail || FALLBACK_THUMB,
+                    duration: resolved.duration,
+                    sourceUrl: url,
+                    downloadUrl: primary.url,
+                    platform: resolved.platform,
+                    isAudio: primary.kind === 'audio',
+                    ext: primary.ext,
+                    quality: primary.quality,
+                    formatLabel: primary.kind === 'audio' ? `${primary.ext.toUpperCase()} Audio` : 'MP4 Video',
+                    primaryLabel: `Download ${primary.label}`,
+                    qualityOptions: resolved.options,
+                    timestamp: Date.now()
+                };
+
+                renderResult(currentVideoData);
+                saveToHistory(currentVideoData);
+                return;
+            }
+
+            // LOCAL YT-DLP ENGINE MODE
+            const meta = await fetchVideoInfo(url);
             let primaryDownloadUrl = '';
             let qualityOptions = [];
 
-            if (hasLocalBackend && apiBase) {
+            {
                 // LOCAL YT-DLP ENGINE: Routes directly to our attachment stream endpoint!
                 primaryDownloadUrl = `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=${isAudio ? 'audio' : 'video'}&quality=${quality}`;
 
@@ -484,23 +739,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         url: `${apiBase}/api/download?url=${encodeURIComponent(url)}&type=audio&quality=320`
                     });
                 }
-            } else if (meta.directStreams) {
-                // CLIENT-SIDE STREAM RESOLUTION (e.g. TikTok via TikWM)
-                if (isAudio && meta.directStreams.audio) {
-                    primaryDownloadUrl = meta.directStreams.audio;
-                } else {
-                    primaryDownloadUrl = meta.directStreams.video;
-                }
-
-                qualityOptions = [
-                    { label: 'Original MP4 Video', quality: 'HD', url: meta.directStreams.video },
-                    { label: 'Original MP3 Audio', quality: 'Audio', url: meta.directStreams.audio }
-                ].filter(opt => !!opt.url);
-
-            } else {
-                // Local engine is offline and platform cannot be extracted purely client-side
-                showOfflineEngineNotice(url, meta);
-                return;
             }
 
             currentVideoData = {
@@ -525,6 +763,9 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingState.style.display = 'none';
             errorState.style.display = 'flex';
             errorMessage.textContent = error.message || 'Could not fetch video. Please check the URL and try again.';
+            if (!hasLocalBackend) {
+                errorMessage.textContent += ' (The free public API may be busy — try again in a moment.)';
+            }
             if (fallbackExternalLink) {
                 fallbackExternalLink.href = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
                 fallbackExternalLink.style.display = 'inline-flex';
@@ -535,13 +776,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Show friendly guidance when engine is offline
-    const showOfflineEngineNotice = (url, meta) => {
+    // Show friendly guidance for platforms that can't be resolved in Browser Mode
+    const showUnsupportedNotice = (url) => {
+        const name = detectPlatform(url).name;
+        const reason = name === 'YouTube'
+            ? 'YouTube blocks every free public download server, so it needs a real yt-dlp backend.'
+            : `${name === 'Video Link' ? 'This site' : name} has no public API that a browser can access directly.`;
         loadingState.style.display = 'none';
         errorState.style.display = 'flex';
         errorMessage.innerHTML = `
-            <strong>Local Download Engine is Offline.</strong><br>
-            To download high-quality videos and MP3 audio from ${detectPlatform(url).name} with no ads or limits, start the local server in your terminal:
+            <strong>${escapeHtml(name)} isn't available in Browser Mode.</strong><br>
+            ${escapeHtml(reason)} Browser Mode supports <b>TikTok</b>, <b>Twitter / X</b> and <b>Reddit</b>.
+            Use the external tool below, or run the local engine on your computer:
             <code style="display:block;margin:0.75rem 0;padding:0.5rem;background:#040810;border-radius:6px;color:#38bdf8;font-family:monospace;">python3 video-download/server.py</code>
         `;
 
@@ -556,7 +802,12 @@ document.addEventListener('DOMContentLoaded', () => {
         hideAllStates();
         resultSection.style.display = 'block';
 
-        videoThumbnail.src = data.thumbnail;
+        videoThumbnail.referrerPolicy = 'no-referrer';
+        videoThumbnail.onerror = () => {
+            videoThumbnail.onerror = null;
+            videoThumbnail.src = FALLBACK_THUMB;
+        };
+        videoThumbnail.src = data.thumbnail || FALLBACK_THUMB;
         videoTitle.textContent = data.title;
         videoAuthor.textContent = data.author;
         resultPlatformBadge.textContent = data.platform;
@@ -568,19 +819,20 @@ document.addEventListener('DOMContentLoaded', () => {
             videoDuration.style.display = 'none';
         }
 
-        mediaTypeBadge.textContent = data.isAudio ? 'MP3 Audio' : 'MP4 Video';
+        mediaTypeBadge.textContent = data.formatLabel || (data.isAudio ? 'MP3 Audio' : 'MP4 Video');
         mediaQualityBadge.textContent = data.quality;
 
         primaryDownloadBtn.onclick = (e) => {
             e.preventDefault();
-            const ext = data.isAudio ? 'mp3' : 'mp4';
-            const filename = `${data.title.replace(/[^\w\s-]/g, '').trim() || 'media'}.${ext}`;
+            if (primaryDownloadBtn.disabled) return;
+            const ext = data.ext || (data.isAudio ? 'mp3' : 'mp4');
+            const filename = `${safeFilename(data.title)}.${ext}`;
             startInBrowserDownload(data.downloadUrl, filename, primaryDownloadBtn);
         };
 
-        primaryDownloadText.textContent = data.isAudio
+        primaryDownloadText.textContent = data.primaryLabel || (data.isAudio
             ? `Download MP3 Audio (${data.quality})`
-            : `Download MP4 Video (${data.quality})`;
+            : `Download MP4 Video (${data.quality})`);
 
         // Populate Quality Pills
         additionalDownloads.innerHTML = '';
@@ -589,12 +841,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'quality-pill';
-                btn.innerHTML = `<span>⬇ ${opt.label}</span>`;
+                btn.innerHTML = `<span>⬇ ${escapeHtml(opt.label)}</span>`;
                 btn.onclick = (e) => {
                     e.preventDefault();
-                    const isAud = opt.label.includes('MP3') || opt.label.includes('Audio');
-                    const ext = isAud ? 'mp3' : 'mp4';
-                    const filename = `${data.title.replace(/[^\w\s-]/g, '').trim() || 'media'}_${opt.quality}.${ext}`;
+                    const isAud = opt.kind ? opt.kind === 'audio' : (opt.label.includes('MP3') || opt.label.includes('Audio'));
+                    const ext = opt.ext || (isAud ? 'mp3' : 'mp4');
+                    const filename = `${safeFilename(data.title)}_${safeFilename(opt.quality)}.${ext}`;
                     startInBrowserDownload(opt.url, filename, btn);
                 };
                 additionalDownloads.appendChild(btn);
@@ -735,12 +987,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentVideoData.isAudio) {
             const audio = document.createElement('audio');
+            audio.referrerPolicy = 'no-referrer';
             audio.controls = true;
             audio.autoplay = true;
             audio.src = currentVideoData.downloadUrl;
             previewMediaContainer.appendChild(audio);
         } else {
             const video = document.createElement('video');
+            video.referrerPolicy = 'no-referrer';
             video.controls = true;
             video.autoplay = true;
             video.src = currentVideoData.downloadUrl;
@@ -785,10 +1039,10 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'history-item';
             div.innerHTML = `
                 <div class="history-item-left">
-                    <img src="${item.thumbnail}" alt="" class="history-thumb">
+                    <img src="${escapeHtml(item.thumbnail)}" alt="" class="history-thumb" referrerpolicy="no-referrer">
                     <div class="history-info">
-                        <div class="history-name">${item.title}</div>
-                        <span class="history-platform">${item.platform} · ${item.quality}</span>
+                        <div class="history-name">${escapeHtml(item.title)}</div>
+                        <span class="history-platform">${escapeHtml(item.platform)} · ${escapeHtml(item.quality)}</span>
                     </div>
                 </div>
                 <div class="history-actions">
@@ -796,9 +1050,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             div.querySelector('.btn-action-small').onclick = () => {
-                const ext = item.isAudio ? 'mp3' : 'mp4';
-                const filename = `${item.title.replace(/[^\w\s-]/g, '').trim() || 'media'}.${ext}`;
-                startInBrowserDownload(item.downloadUrl, filename);
+                // CDN links (TikTok, X, Reddit) expire, so re-resolve fresh links from the source URL
+                urlInput.value = item.sourceUrl;
+                updatePlatformIcon();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                fetchMediaStreams(item.sourceUrl);
             };
             historyList.appendChild(div);
         });
