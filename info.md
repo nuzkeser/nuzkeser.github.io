@@ -49,6 +49,15 @@ Türkiye
   - German as a Foreign Language (0525): **A**
   - English Literature (0475): **B**
 
+## Software & Web Projects
+
+### Sepetim — Supermarket Price Comparison & Deals Platform
+**Website:** [sepetim.app](https://sepetim.app)  
+**Location Focus:** Yakutiye, Erzurum, Türkiye  
+- Developed and launched a modern, responsive web application for real-time supermarket price comparison and deal discovery.
+- Features multi-market price comparisons across local store chains, smart basket optimization, price advantage badges, and crowdsourced receipt sharing.
+- Fast, accessible mobile-first interface designed to bring price transparency to household grocery shopping.
+
 ---
 
 ## Academic & Research Projects
