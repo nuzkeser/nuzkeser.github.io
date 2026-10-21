@@ -18,27 +18,32 @@ IB Diploma Programme student at **Bilkent Erzurum Laboratory School (BELS)** wit
 ## Education
 
 ### Bilkent Erzurum Laboratory School (BELS)
-**IB Diploma Programme — Grade 12**  
-Türkiye
+**IB Diploma Programme — Grade 12 (Official Predicted: 41 / 45)**  
+Türkiye · Expected Graduation: June 2027 · [Official Certificate PDF](src/ib-predicted-grades.pdf)
 
-**Higher Level**
-- Mathematics: Analysis and Approaches 
-- Physics
-- Chemistry
+**Higher Level (All 7s — 21/21)**
+- Mathematics: Analysis and Approaches HL — **7**
+- Physics HL in English — **7**
+- Chemistry HL in English — **7**
 
-**Standard Level**
-- Turkish A: Literature
-- English A: Language & Literature
-- Turkey in the 20th Century
+**Standard Level (All 6s — 18/21)**
+- English A: Language & Literature SL — **6**
+- Turkish A: Literature SL — **6**
+- Turkey in the 20th Century SL — **6**
+
+**Diploma Core (+2 Bonus Points)**
+- Theory of Knowledge (TOK) — **Grade B**
+- Extended Essay (EE in Physics) — **Grade B**
 
 ---
 
 ## Academic Achievements
 
+- **IB Diploma Predicted Score:** **41 / 45** (39/42 Subjects + 2 Core Points, Triple 7 in HL)
 - **SAT:** 1440
   - Mathematics: **790**
   - Reading & Writing: **650**
-- **IELTS:** **7.5**
+- **IELTS:** **7.5** (CEFR C1)
 - **IGCSE**
   - International Extended Mathematics (0607): **A***
   - Physics (0625): **A***

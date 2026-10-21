@@ -201,6 +201,19 @@
                         <span>Print / Save PDF</span>
                     </button>
 
+                    <a href="src/ib-predicted-grades.pdf" target="_blank" rel="noopener noreferrer"
+                        class="btn btn-primary animate-pulse-glow" title="View Official BELS IB Predicted Grades Certificate">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span>Official IB Predicted (41/45 PDF)</span>
+                    </a>
+
                     <a href="https://github.com/nuzkeser" target="_blank" rel="noopener noreferrer"
                         class="btn btn-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -259,12 +272,12 @@
                 <!-- IB Diploma Card -->
                 <div class="score-badge-card spotlight-card">
                     <div class="score-badge-top">
-                        <span class="score-type-label">IB Diploma Programme</span>
-                        <span class="score-percentile-tag">Grade 12</span>
+                        <span class="score-type-label">IB Predicted</span>
+                        <span class="score-percentile-tag" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #34d399;">Official 41 / 45</span>
                     </div>
-                    <div class="score-main-value" style="font-size: 1.85rem;">Triple HL</div>
+                    <div class="score-main-value" data-count-target="41" data-count-suffix=" / 45">41 / 45</div>
                     <div class="score-breakdown-text">
-                        Math: Analysis & Approaches HL, Physics HL, Chemistry HL.
+                        Triple 7 in HL (Math AA, Physics, Chem) · 39/42 Subjects + 2 Core Points (TOK & EE B).
                     </div>
                 </div>
             </section>
@@ -319,42 +332,103 @@
                         <div class="resume-card-header">
                             <div>
                                 <h3 class="resume-card-title">Bilkent Erzurum Laboratory School (BELS)</h3>
-                                <div class="resume-card-subtitle">International Baccalaureate (IB) Diploma Programme —
-                                    Grade 12</div>
+                                <div class="resume-card-subtitle">
+                                    International Baccalaureate (IB) Diploma Programme — Grade 12 · <strong style="color: var(--primary);">Official Predicted: 41 / 45</strong>
+                                </div>
                             </div>
                             <span class="resume-card-date">Erzurum, Türkiye · Current</span>
                         </div>
 
                         <div class="resume-card-body">
                             <p>
-                                Rigorous international curriculum combining advanced analytical mathematics,
-                                experimental
-                                physical sciences, and humanities with bilingual assessment.
+                                Rigorous international curriculum combining advanced analytical mathematics, experimental physical sciences, and humanities with bilingual assessment. Awarded an official predicted score of <strong>41/45</strong> with a <strong>Triple 7 in all Higher Level subjects</strong> (Math AA, Physics, Chemistry).
                             </p>
 
                             <div class="subject-grid">
                                 <div class="subject-box">
                                     <div class="subject-box-header">
                                         <span style="font-weight: 600; font-size: 0.9375rem;">Higher Level (HL)</span>
-                                        <span class="subject-level-badge hl">3 Subjects</span>
+                                        <span class="subject-level-badge hl">Triple 7 · 21/21</span>
                                     </div>
                                     <ul class="subject-items-list">
-                                        <li><strong>Mathematics:</strong> Analysis and Approaches</li>
-                                        <li><strong>Physics:</strong></li>
-                                        <li><strong>Chemistry:</strong></li>
+                                        <li style="justify-content: space-between;">
+                                            <span><strong>Mathematics:</strong> Analysis & Approaches</span>
+                                            <span class="tag-badge" style="margin-left: auto;">Predicted 7</span>
+                                        </li>
+                                        <li style="justify-content: space-between;">
+                                            <span><strong>Physics:</strong> HL in English</span>
+                                            <span class="tag-badge" style="margin-left: auto;">Predicted 7</span>
+                                        </li>
+                                        <li style="justify-content: space-between;">
+                                            <span><strong>Chemistry:</strong> HL in English</span>
+                                            <span class="tag-badge" style="margin-left: auto;">Predicted 7</span>
+                                        </li>
                                     </ul>
                                 </div>
 
                                 <div class="subject-box">
                                     <div class="subject-box-header">
                                         <span style="font-weight: 600; font-size: 0.9375rem;">Standard Level (SL)</span>
-                                        <span class="subject-level-badge sl">3 Subjects</span>
+                                        <span class="subject-level-badge sl">All 6s · 18/21</span>
                                     </div>
                                     <ul class="subject-items-list">
-                                        <li><strong>Turkish A:</strong> Literature SL</li>
-                                        <li><strong>English A:</strong> Language & Literature SL</li>
-                                        <li><strong>Social Sciences:</strong> Turkey in the 20th Century (TITC) SL</li>
+                                        <li style="justify-content: space-between;">
+                                            <span><strong>English A:</strong> Language & Literature</span>
+                                            <span class="tag-badge-muted" style="margin-left: auto;">Predicted 6</span>
+                                        </li>
+                                        <li style="justify-content: space-between;">
+                                            <span><strong>Turkish A:</strong> Literature</span>
+                                            <span class="tag-badge-muted" style="margin-left: auto;">Predicted 6</span>
+                                        </li>
+                                        <li style="justify-content: space-between;">
+                                            <span><strong>Turkey in 20th Century:</strong> TITC</span>
+                                            <span class="tag-badge-muted" style="margin-left: auto;">Predicted 6</span>
+                                        </li>
                                     </ul>
+                                </div>
+                            </div>
+
+                            <!-- Core: TOK & EE -->
+                            <div class="subject-box" style="margin-top: 1rem;">
+                                <div class="subject-box-header">
+                                    <span style="font-weight: 600; font-size: 0.9375rem;">IB Diploma Core</span>
+                                    <span class="subject-level-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">+2 Bonus Points</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                                        <span style="font-size: 0.875rem;"><strong>Theory of Knowledge:</strong> TOK</span>
+                                        <span class="tag-badge" style="font-size: 0.7rem;">Grade B</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                                        <span style="font-size: 0.875rem;"><strong>Extended Essay:</strong> Physics</span>
+                                        <span class="tag-badge" style="font-size: 0.7rem;">Grade B</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Official Certificate Callout -->
+                            <div style="margin-top: 1.25rem; padding: 1.1rem 1.25rem; border-radius: var(--radius-md); background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%); border: 1px solid var(--border-primary); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.6rem;">📜</span>
+                                    <div>
+                                        <div style="font-weight: 700; color: var(--foreground); font-size: 0.95rem;">
+                                            Official BELS Predicted Grades Certificate (41 / 45)
+                                        </div>
+                                        <div style="font-size: 0.8125rem; color: var(--muted-foreground); margin-top: 0.15rem;">
+                                            Issued by BELS (20/10/2026) · Certified by IBDP Coordinator Selin Sethi & Principal Dinçer Akış
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+                                    <a href="src/ib-predicted-grades.pdf" target="_blank" rel="noopener noreferrer" class="btn-primary animate-pulse-glow" style="font-size: 0.8125rem; padding: 0.45rem 1rem; text-decoration: none;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                                        </svg>
+                                        <span>View Official PDF</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
