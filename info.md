@@ -40,8 +40,8 @@ Türkiye · Expected Graduation: June 2027 · [Official Certificate PDF](src/ib-
 ## Academic Achievements
 
 - **IB Diploma Predicted Score:** **41 / 45** (39/42 Subjects + 2 Core Points, Triple 7 in HL)
-- **SAT:** 1440
-  - Mathematics: **790**
+- **SAT:** 1450
+  - Mathematics: **800**
   - Reading & Writing: **650**
 - **IELTS:** **7.5** (CEFR C1)
 - **IGCSE**
