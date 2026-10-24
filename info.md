@@ -43,13 +43,14 @@ Türkiye · Expected Graduation: June 2027 · [Official Certificate PDF](src/ib-
 - **SAT:** 1450
   - Mathematics: **800**
   - Reading & Writing: **650**
-- **IELTS:** **7.5** (CEFR C1)
-- **IGCSE**
+- **IELTS Academic:** **7.5** (CEFR C1) · [Official Test Report Form PDF](src/ielts-certificate.pdf)
+  - Listening: **8.0** · Reading: **7.5** · Writing: **7.0** · Speaking: **6.5**
+- **Cambridge IGCSE:** Completed with Honors · [Official Certificate PDF](src/igcse-certificate.pdf)
   - International Extended Mathematics (0607): **A***
   - Physics (0625): **A***
   - Chemistry (0620): **A***
   - Biology (0610): **A**
-  - English as a First Language (0500): **B**
+  - English as a First Language (0500): **B** (Grade 1 Speaking & Listening)
   - Turkish as a First Language (0513): **A***
   - German as a Foreign Language (0525): **A**
   - English Literature (0475): **B**
