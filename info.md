@@ -40,9 +40,6 @@ Türkiye · Expected Graduation: June 2027 · [Official Certificate PDF](src/ib-
 ## Academic Achievements
 
 - **IB Diploma Predicted Score:** **41 / 45** (39/42 Subjects + 2 Core Points, Triple 7 in HL)
-- **SAT:** 1450
-  - Mathematics: **800**
-  - Reading & Writing: **650**
 - **IELTS Academic:** **7.5** (CEFR C1) · [Official Test Report Form PDF](src/ielts-certificate.pdf)
   - Listening: **8.0** · Reading: **7.5** · Writing: **7.0** · Speaking: **6.5**
 - **Cambridge IGCSE:** Completed with Honors · [Official Certificate PDF](src/igcse-certificate.pdf)
@@ -91,7 +88,7 @@ Türkiye · Expected Graduation: June 2027 · [Official Certificate PDF](src/ib-
 - Applied calculus and mathematical modeling to electrical circuit behavior.
 - Explored exponential charging and discharging relationships.
 
-### Turkish A / TITC Research
+### TITC Research
 **Research focus:** Effects of Marshall Aid on agriculture in the Republic of Türkiye.
 
 - Investigated agricultural mechanization, agricultural production, and demographic change.
