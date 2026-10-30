@@ -1470,7 +1470,7 @@ button {
 
 @media (min-width: 1024px) {
     .resume-scores-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -1905,7 +1905,7 @@ button {
     }
 
     .resume-scores-grid {
-        grid-template-columns: repeat(4, 1fr) !important;
+        grid-template-columns: repeat(3, 1fr) !important;
         gap: 8pt !important;
         margin-bottom: 14pt !important;
     }
